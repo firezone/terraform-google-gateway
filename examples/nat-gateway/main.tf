@@ -14,7 +14,7 @@ resource "google_service_account" "firezone" {
 }
 
 module "gateways" {
-  source = "../../"
+  source = "firezone/gateway/google"
 
   project_id = var.project_id
 
