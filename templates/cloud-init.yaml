@@ -1,8 +1,10 @@
 #cloud-config
 
 package_update: true
-package_upgrade: true
-package_reboot_if_required: true
+
+# Uncomment the following lines to enable package upgrade and reboot on provision if required
+# package_upgrade: true
+# package_reboot_if_required: true
 
 packages:
   - apt-transport-https

@@ -138,7 +138,7 @@ variable "health_check" {
     protocol = "TCP"
     port     = 8080
 
-    initial_delay_sec = 200
+    initial_delay_sec = 300
 
     check_interval_sec  = 15
     timeout_sec         = 10
