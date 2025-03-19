@@ -38,8 +38,8 @@ write_files:
 
 swap:
   filename: /swapfile
-  size: ${swap_size}G
-  maxsize: ${swap_size}G
+  size: ${swap_size_gb}G
+  maxsize: ${swap_size_gb}G
 
 runcmd:
   # Install Ops Agent

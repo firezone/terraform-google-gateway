@@ -45,10 +45,10 @@ variable "compute_provision_public_ipv6_address" {
   description = "Whether to provision public IPv4 address for the instances."
 }
 
-variable "swap_size" {
+variable "swap_size_gb" {
   type        = number
   default     = 0
-  description = "Size of the swap partition in GB. Set to 0 to disable swap."
+  description = "Size of the swap partition in GB. Default is 0, or disabled."
 }
 
 ################################################################################
@@ -138,7 +138,7 @@ variable "health_check" {
     protocol = "TCP"
     port     = 8080
 
-    initial_delay_sec = 100
+    initial_delay_sec = 200
 
     check_interval_sec  = 15
     timeout_sec         = 10
