@@ -119,6 +119,7 @@ resource "google_compute_instance_template" "application" {
       firezone_token        = var.token
       firezone_api_url      = var.api_url
       firezone_version      = var.vsn
+      swap_size             = var.swap_size
       firezone_artifact_url = "https://storage.googleapis.com/firezone-prod-artifacts/firezone-gateway"
     })
 
