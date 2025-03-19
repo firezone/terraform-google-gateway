@@ -1,17 +1,5 @@
 #cloud-config
 
-package_update: true
-
-# Uncomment the following lines to enable package upgrade and reboot on provision if required
-# package_upgrade: true
-# package_reboot_if_required: true
-
-packages:
-  - apt-transport-https
-  - ca-certificates
-  - software-properties-common
-  - curl
-
 write_files:
   - path: /etc/apt/keyrings
     permissions: "0755"
@@ -44,10 +32,7 @@ swap:
   maxsize: ${swap_size_gb}G
 
 runcmd:
-  # Install Ops Agent
-  - curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
-  - sudo bash add-google-cloud-ops-agent-repo.sh --also-install
-  # Install Firezone Gateway
+  # Install Firezone Gateway first to allow health check to succeed ASAP
   - |
     export FIREZONE_TOKEN="${firezone_token}"
     export FIREZONE_API_URL="${firezone_api_url}"
@@ -57,6 +42,12 @@ runcmd:
     export FIREZONE_GOOGLE_CLOUD_PROJECT_ID="${project_id}"
     export FIREZONE_OTLP_GRPC_ENDPOINT="${otlp_grpc_endpoint}"
     export RUST_LOG="${observability_log_level}"
-    curl -fsSL https://raw.githubusercontent.com/firezone/firezone/main/scripts/gateway-systemd-install.sh -o /tmp/gateway-install.sh
+    wget -qO /tmp/gateway-install.sh https://raw.githubusercontent.com/firezone/firezone/main/scripts/gateway-systemd-install.sh
     bash /tmp/gateway-install.sh
     rm /tmp/gateway-install.sh
+  # Install Ops Agent
+  - |
+    export DEBIAN_FRONTEND=noninteractive
+    wget -qO /tmp/ops-agent.sh https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
+    sudo bash /tmp/ops-agent.sh --also-install
+    rm /tmp/ops-agent.sh
