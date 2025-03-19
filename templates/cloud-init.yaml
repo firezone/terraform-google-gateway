@@ -32,7 +32,12 @@ swap:
   maxsize: ${swap_size_gb}G
 
 runcmd:
-  # Install Firezone Gateway first to allow health check to succeed ASAP
+  # We need curl to download the gateway binary
+  - |
+    export DEBIAN_FRONTEND=noninteractive
+    apt-get update -y -qq
+    apt-get install -y -qq curl
+  # Install Firezone Gateway early to allow healthcheck to succeed.
   - |
     export FIREZONE_TOKEN="${firezone_token}"
     export FIREZONE_API_URL="${firezone_api_url}"
@@ -42,12 +47,9 @@ runcmd:
     export FIREZONE_GOOGLE_CLOUD_PROJECT_ID="${project_id}"
     export FIREZONE_OTLP_GRPC_ENDPOINT="${otlp_grpc_endpoint}"
     export RUST_LOG="${observability_log_level}"
-    wget -qO /tmp/gateway-install.sh https://raw.githubusercontent.com/firezone/firezone/main/scripts/gateway-systemd-install.sh
+    curl -fsSL https://raw.githubusercontent.com/firezone/firezone/main/scripts/gateway-systemd-install.sh -o /tmp/gateway-install.sh
     bash /tmp/gateway-install.sh
-    rm /tmp/gateway-install.sh
   # Install Ops Agent
   - |
-    export DEBIAN_FRONTEND=noninteractive
-    wget -qO /tmp/ops-agent.sh https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
-    sudo bash /tmp/ops-agent.sh --also-install
-    rm /tmp/ops-agent.sh
+    curl -fsSL https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o /tmp/ops-agent.sh
+    bash /tmp/ops-agent.sh --also-install
