@@ -45,6 +45,12 @@ variable "compute_provision_public_ipv6_address" {
   description = "Whether to provision public IPv4 address for the instances."
 }
 
+variable "swap_size" {
+  type        = number
+  default     = 0
+  description = "Size of the swap partition in GB. Set to 0 to disable swap."
+}
+
 ################################################################################
 ## Observability
 ################################################################################

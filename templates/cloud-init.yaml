@@ -36,6 +36,11 @@ write_files:
             otlp:
               receivers: [otlp]
 
+swap:
+  filename: /swapfile
+  size: ${swap_size}G
+  maxsize: ${swap_size}G
+
 runcmd:
   # Install Ops Agent
   - curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh
