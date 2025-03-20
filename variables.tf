@@ -111,12 +111,6 @@ variable "vsn" {
   description = "Version of the Firezone gateway that is downloaded from `artifact_url`."
 }
 
-variable "firezone_id" {
-  type        = string
-  default     = null
-  description = "Optionally override the FIREZONE_ID variable to identify the gateway in the admin portal. Defaults to a random string."
-}
-
 variable "health_check" {
   type = object({
     name     = string
