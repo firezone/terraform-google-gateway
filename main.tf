@@ -117,7 +117,6 @@ resource "google_compute_instance_template" "application" {
       observability_log_level = var.observability_log_level
 
       firezone_token        = var.token
-      firezone_id           = var.firezone_id != null ? var.firezone_id : random_id.firezone_id.hex
       firezone_api_url      = var.api_url
       firezone_version      = var.vsn
       swap_size_gb          = var.swap_size_gb
@@ -181,10 +180,6 @@ resource "google_compute_health_check" "port" {
   lifecycle {
     create_before_destroy = true
   }
-}
-
-resource "random_id" "firezone_id" {
-  byte_length = 8
 }
 
 # Use template to deploy zonal instance group
