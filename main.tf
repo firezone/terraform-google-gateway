@@ -67,9 +67,10 @@ resource "google_compute_instance_template" "application" {
   }
 
   network_interface {
-    subnetwork = var.compute_subnetwork
-
-    stack_type = "IPV4_IPV6"
+    subnetwork  = var.compute_subnetwork
+    nic_type    = "GVNIC"
+    queue_count = var.queue_count
+    stack_type  = "IPV4_IPV6"
 
     dynamic "ipv6_access_config" {
       for_each = var.compute_provision_public_ipv6_address == true ? [true] : []
