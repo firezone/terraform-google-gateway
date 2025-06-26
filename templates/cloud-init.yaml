@@ -40,7 +40,7 @@ runcmd:
   # Install Firezone Gateway early to allow healthcheck to succeed.
   - |
     export FIREZONE_TOKEN="${firezone_token}"
-    export FIREZONE_ID="$(uuidgen)"
+    export FIREZONE_ID="$(head -c 32 /dev/urandom | sha256sum | cut -d' ' -f1)"
     export FIREZONE_API_URL="${firezone_api_url}"
     export FIREZONE_VERSION="${firezone_version}"
     export FIREZONE_ARTIFACT_URL="${firezone_artifact_url}"
