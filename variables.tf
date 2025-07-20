@@ -122,7 +122,7 @@ variable "api_url" {
 
 variable "artifact_url" {
   type        = string
-  default     = "https://storage.googleapis.com/firezone-prod-artifacts/firezone-gateway"
+  default     = "https://www.firezone.dev/dl/firezone-gateway"
   description = "URL from which Firezone install script will download the gateway binary"
 }
 
