@@ -45,7 +45,7 @@ resource "google_compute_router_nat" "firezone" {
   # this gateway.
   enable_dynamic_port_allocation = true
   min_ports_per_vm               = 64
-  max_ports_per_vm               = 65536
+  max_ports_per_vm               = 32768
 
   nat_ip_allocate_option = "MANUAL_ONLY"
   nat_ips = [
