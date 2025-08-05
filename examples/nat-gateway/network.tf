@@ -40,6 +40,13 @@ resource "google_compute_router_nat" "firezone" {
   name   = "firezone-gateway-nat"
   router = google_compute_router.firezone.name
 
+  # The default here is static, and only 64 ports per VM, which will cause issues
+  # if more than 64 clients are connecting to the same public resource behind
+  # this gateway.
+  enable_dynamic_port_allocation = true
+  min_ports_per_vm               = 64
+  max_ports_per_vm               = 32768
+
   nat_ip_allocate_option = "MANUAL_ONLY"
   nat_ips = [
     google_compute_address.ipv4.self_link,
