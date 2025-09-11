@@ -21,9 +21,9 @@ locals {
   compute_region_zones = length(var.compute_instance_availability_zones) == 0 ? data.google_compute_zones.in_region.names : var.compute_instance_availability_zones
 }
 
-# Fetch most recent COS image
+# Fetch most recent Ubuntu image based on architecture
 data "google_compute_image" "ubuntu" {
-  family  = "ubuntu-2404-lts"
+  family  = "ubuntu-2404-lts-${var.compute_instance_architecture}"
   project = "ubuntu-os-cloud"
 }
 
