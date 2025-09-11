@@ -33,6 +33,17 @@ variable "compute_instance_type" {
   type = string
 }
 
+variable "compute_instance_architecture" {
+  type        = string
+  default     = "amd64"
+  description = "The architecture of the compute instance (amd64 or arm64)"
+
+  validation {
+    condition     = contains(["amd64", "arm64"], var.compute_instance_architecture)
+    error_message = "Architecture must be either 'amd64' or 'arm64'."
+  }
+}
+
 variable "compute_provision_public_ipv4_address" {
   type        = bool
   default     = true
