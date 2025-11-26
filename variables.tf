@@ -95,6 +95,19 @@ variable "observability_log_level" {
   description = "Sets RUST_LOG environment variable which applications should use to configure Rust Logger. Default: 'info'."
 }
 
+variable "observability_log_format" {
+  type     = string
+  nullable = false
+  default  = "human"
+
+  description = "Sets the log output format. Possible values are 'human' and 'json'. Default: 'human'."
+
+  validation {
+    condition     = contains(["human", "json"], var.observability_log_format)
+    error_message = "Log format must be either 'human' or 'json'."
+  }
+}
+
 ################################################################################
 ## Regional Instance Group
 ################################################################################
