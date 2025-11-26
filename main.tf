@@ -113,9 +113,10 @@ resource "google_compute_instance_template" "application" {
 
   metadata = {
     user-data = templatefile("${path.module}/templates/cloud-init.yaml", {
-      project_id              = var.project_id
-      otlp_grpc_endpoint      = "127.0.0.1:4317"
-      observability_log_level = var.observability_log_level
+      project_id               = var.project_id
+      otlp_grpc_endpoint       = "127.0.0.1:4317"
+      observability_log_level  = var.observability_log_level
+      observability_log_format = var.observability_log_format
 
       firezone_token        = var.token
       firezone_api_url      = var.api_url
