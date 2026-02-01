@@ -128,6 +128,24 @@ variable "labels" {
   description = "Labels to add to all created by this module resources."
 }
 
+variable "max_unavailable_fixed" {
+  type    = number
+  default = null
+
+  description = "Maximum number of instances that can be unavailable during updates. Set to 0 for zero-downtime. Defaults to max(1, number of zones)."
+}
+
+variable "max_surge_fixed" {
+  description = "Max extra instances during updates. Must be >= 1 if max_unavailable is 0."
+  type        = number
+  default     = null
+
+  validation {
+    condition     = var.max_surge_fixed == null || var.max_surge_fixed >= 1
+    error_message = "max_surge_fixed must be at least 1 to allow rolling updates."
+  }
+}
+
 ################################################################################
 ## Firezone Gateway
 ################################################################################

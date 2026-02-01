@@ -215,8 +215,8 @@ resource "google_compute_region_instance_group_manager" "application" {
     type           = "PROACTIVE"
     minimal_action = "REPLACE"
 
-    max_unavailable_fixed = max(1, length(local.compute_region_zones))
-    max_surge_fixed       = max(1, var.compute_instance_replicas - 1) + length(local.compute_region_zones)
+    max_unavailable_fixed = coalesce(var.max_unavailable_fixed, max(1, length(local.compute_region_zones)))
+    max_surge_fixed       = coalesce(var.max_surge_fixed, max(1, var.compute_instance_replicas - 1) + length(local.compute_region_zones))
   }
 
   timeouts {
