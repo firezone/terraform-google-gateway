@@ -113,10 +113,12 @@ resource "google_compute_instance_template" "application" {
 
   metadata = {
     user-data = templatefile("${path.module}/templates/cloud-init.yaml", {
-      project_id               = var.project_id
-      otlp_grpc_endpoint       = "127.0.0.1:4317"
-      observability_log_level  = var.observability_log_level
-      observability_log_format = var.observability_log_format
+      project_id                     = var.project_id
+      otlp_grpc_endpoint             = "127.0.0.1:4317"
+      observability_log_level        = var.observability_log_level
+      observability_log_format       = var.observability_log_format
+      observability_enable_flow_logs = var.observability_enable_flow_logs
+      additional_startup_commands    = [for command in var.additional_startup_commands : join("\n", [for line in split("\n", trimspace(replace(command, "\r\n", "\n"))) : "    ${line}"])]
 
       firezone_token        = var.token
       firezone_api_url      = var.api_url

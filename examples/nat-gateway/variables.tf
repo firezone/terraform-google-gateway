@@ -39,6 +39,12 @@ variable "log_level" {
   description = "Sets RUST_LOG environment variable to configure the Gateway's log level. Default: 'info'."
 }
 
+variable "enable_flow_logs" {
+  type        = bool
+  default     = false
+  description = "Sets FIREZONE_FLOW_LOGS=true on the Gateway instances."
+}
+
 ################################################################################
 ## Firezone
 ################################################################################
@@ -46,6 +52,12 @@ variable "log_level" {
 variable "token" {
   type        = string
   description = "Gateway token to use for authentication."
+}
+
+variable "additional_startup_commands" {
+  type        = list(string)
+  default     = []
+  description = "Additional shell commands to run after the Gateway and Ops Agent are installed."
 }
 
 variable "subnet_cidr" {

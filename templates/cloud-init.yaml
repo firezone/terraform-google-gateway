@@ -45,6 +45,9 @@ runcmd:
     export FIREZONE_VERSION="${firezone_version}"
     export FIREZONE_ARTIFACT_URL="${firezone_artifact_url}"
     export FIREZONE_LOG_FORMAT="${observability_log_format}"
+%{ if observability_enable_flow_logs ~}
+    export FIREZONE_FLOW_LOGS="true"
+%{ endif ~}
     export FIREZONE_GOOGLE_CLOUD_PROJECT_ID="${project_id}"
     export FIREZONE_OTLP_GRPC_ENDPOINT="${otlp_grpc_endpoint}"
     export RUST_LOG="${observability_log_level}"
@@ -54,3 +57,7 @@ runcmd:
   - |
     curl -fsSL https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh -o /tmp/ops-agent.sh
     bash /tmp/ops-agent.sh --also-install
+%{ for startup_command in additional_startup_commands ~}
+  - |
+${startup_command}
+%{ endfor ~}
