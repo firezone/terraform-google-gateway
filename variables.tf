@@ -108,6 +108,14 @@ variable "observability_log_format" {
   }
 }
 
+variable "observability_enable_flow_logs" {
+  type     = bool
+  nullable = false
+  default  = false
+
+  description = "Sets FIREZONE_FLOW_LOGS=true for the Gateway when enabled. Default: false."
+}
+
 ################################################################################
 ## Regional Instance Group
 ################################################################################
@@ -172,6 +180,18 @@ variable "vsn" {
   type        = string
   default     = "latest"
   description = "Version of the Firezone gateway that is downloaded from `artifact_url`."
+}
+
+variable "additional_startup_commands" {
+  type        = list(string)
+  nullable    = false
+  default     = []
+  description = "Additional shell commands to run at the end of cloud-init `runcmd`. Each list item is rendered as a separate shell block."
+
+  validation {
+    condition     = alltrue([for command in var.additional_startup_commands : trimspace(command) != ""])
+    error_message = "additional_startup_commands cannot contain empty commands."
+  }
 }
 
 variable "health_check" {

@@ -30,7 +30,10 @@ module "gateways" {
   compute_provision_public_ipv6_address = false
   compute_provision_public_ipv4_address = false
 
-  observability_log_level = var.log_level
+  observability_log_level        = var.log_level
+  observability_enable_flow_logs = var.enable_flow_logs
+
+  additional_startup_commands = var.additional_startup_commands
 
   vsn = "latest"
 
