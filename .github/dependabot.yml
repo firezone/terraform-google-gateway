@@ -4,13 +4,19 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "terraform"
     directory: "/"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
 
   - package-ecosystem: "terraform"
     directory: "/examples/nat-gateway"
     schedule:
       interval: "weekly"
+    cooldown:
+      default-days: 7
