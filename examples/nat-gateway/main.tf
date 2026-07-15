@@ -21,9 +21,8 @@ module "gateways" {
   compute_network    = google_compute_network.firezone.id
   compute_subnetwork = google_compute_subnetwork.firezone.id
 
-  compute_instance_replicas = var.replicas
-  compute_instance_type     = var.machine_type
-  compute_region            = var.region
+  compute_instance_type = var.machine_type
+  compute_region        = var.region
 
   # Since we are behind a NAT gateway, we don't need public IP addresses
   # to be automatically provisioned for the instances
@@ -37,6 +36,15 @@ module "gateways" {
 
   vsn = "latest"
 
-  token      = var.token
+  # Single-owner tokens, one per Gateway instance (bound to one connected
+  # Gateway at a time). One Gateway instance is deployed per token.
+  tokens = var.tokens
+
+  # Legacy: multi-owner tokens share one token across the cluster. Only use
+  # this for existing deployments; set it instead of tokens and set
+  # compute_instance_replicas to the desired number of instances.
+  # token                     = "<YOUR TOKEN HERE>"
+  # compute_instance_replicas = 3
+
   depends_on = [google_project_service.compute-api]
 }
