@@ -16,12 +16,6 @@ variable "region" {
   description = "Region to deploy the Gateway(s) in."
 }
 
-variable "replicas" {
-  type        = number
-  description = "Number of Gateway replicas to deploy in the availability zone."
-  default     = 3
-}
-
 variable "machine_type" {
   type    = string
   default = "n1-standard-1"
@@ -49,9 +43,10 @@ variable "enable_flow_logs" {
 ## Firezone
 ################################################################################
 
-variable "token" {
-  type        = string
-  description = "Gateway token to use for authentication."
+variable "tokens" {
+  type        = list(string)
+  description = "List of single-owner Gateway tokens, one per Gateway instance. One instance is deployed per token. We recommend a minimum of 3 for high availability."
+  sensitive   = true
 }
 
 variable "additional_startup_commands" {

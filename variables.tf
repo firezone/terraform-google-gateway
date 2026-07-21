@@ -26,7 +26,9 @@ variable "compute_instance_availability_zones" {
 }
 
 variable "compute_instance_replicas" {
-  type = string
+  type        = number
+  default     = null
+  description = "The number of Gateway instances to deploy when using token (legacy). Defaults to 3. Must not be set when using tokens, where the number of instances is the length of the token list."
 }
 
 variable "compute_instance_type" {
@@ -160,7 +162,15 @@ variable "max_surge_fixed" {
 
 variable "token" {
   type        = string
-  description = "Portal token to use for authentication."
+  description = "A multi-owner Firezone token shared by all Gateway instances (legacy). New deployments should use tokens instead. Mutually exclusive with tokens."
+  default     = null
+  sensitive   = true
+}
+
+variable "tokens" {
+  type        = list(string)
+  description = "A list of single-owner Firezone tokens, one per Gateway instance. Each token can only be used by one connected Gateway at a time. The number of Gateway instances deployed is the length of this list. Mutually exclusive with token."
+  default     = null
   sensitive   = true
 }
 

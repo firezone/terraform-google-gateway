@@ -19,6 +19,22 @@ locals {
   ]
 
   compute_region_zones = length(var.compute_instance_availability_zones) == 0 ? data.google_compute_zones.in_region.names : var.compute_instance_availability_zones
+
+  # In single-owner mode one instance group is deployed per token, each with a
+  # single instance; in legacy multi-owner mode a single instance group runs
+  # var.compute_instance_replicas (default 3) instances sharing one token.
+  tokens             = var.tokens != null ? var.tokens : [var.token]
+  replicas_per_group = var.tokens != null ? 1 : coalesce(var.compute_instance_replicas, 3)
+}
+
+moved {
+  from = google_compute_instance_template.application
+  to   = google_compute_instance_template.application[0]
+}
+
+moved {
+  from = google_compute_region_instance_group_manager.application
+  to   = google_compute_region_instance_group_manager.application[0]
 }
 
 # Fetch most recent Ubuntu image based on architecture
@@ -29,9 +45,11 @@ data "google_compute_image" "ubuntu" {
 
 # Deploy app
 resource "google_compute_instance_template" "application" {
+  count = length(local.tokens)
+
   project = var.project_id
 
-  name_prefix = "${var.name}-"
+  name_prefix = var.tokens != null ? "${var.name}-${count.index}-" : "${var.name}-"
 
   description = "This template is used to create ${var.name} Firezone Gateway instances."
 
@@ -120,7 +138,7 @@ resource "google_compute_instance_template" "application" {
       observability_enable_flow_logs = var.observability_enable_flow_logs
       additional_startup_commands    = [for command in var.additional_startup_commands : join("\n", [for line in split("\n", trimspace(replace(command, "\r\n", "\n"))) : "    ${line}"])]
 
-      firezone_token        = var.token
+      firezone_token        = local.tokens[count.index]
       firezone_api_url      = var.api_url
       firezone_version      = var.vsn
       swap_size_gb          = var.swap_size_gb
@@ -155,6 +173,16 @@ resource "google_compute_instance_template" "application" {
 
   lifecycle {
     create_before_destroy = true
+
+    precondition {
+      condition     = (var.token != null) != (var.tokens != null)
+      error_message = "Exactly one of token (multi-owner, legacy) or tokens (single-owner, one per instance) must be set."
+    }
+
+    precondition {
+      condition     = var.tokens == null || var.compute_instance_replicas == null
+      error_message = "compute_instance_replicas cannot be set when tokens is used; the number of instances is determined by the length of the token list."
+    }
   }
 }
 
@@ -188,23 +216,25 @@ resource "google_compute_health_check" "port" {
 
 # Use template to deploy zonal instance group
 resource "google_compute_region_instance_group_manager" "application" {
+  count = length(local.tokens)
+
   project = var.project_id
 
-  name = "${var.name}-${var.compute_region}"
+  name = var.tokens != null ? "${var.name}-${count.index}-${var.compute_region}" : "${var.name}-${var.compute_region}"
 
-  base_instance_name = var.name
+  base_instance_name = var.tokens != null ? "${var.name}-${count.index}" : var.name
 
   region                    = var.compute_region
   distribution_policy_zones = local.compute_region_zones
 
-  target_size = var.compute_instance_replicas
+  target_size = local.replicas_per_group
 
   wait_for_instances        = true
   wait_for_instances_status = "STABLE"
 
   version {
     name              = var.vsn
-    instance_template = google_compute_instance_template.application.self_link
+    instance_template = google_compute_instance_template.application[count.index].self_link
   }
 
   auto_healing_policies {
@@ -218,7 +248,7 @@ resource "google_compute_region_instance_group_manager" "application" {
     minimal_action = "REPLACE"
 
     max_unavailable_fixed = coalesce(var.max_unavailable_fixed, max(1, length(local.compute_region_zones)))
-    max_surge_fixed       = coalesce(var.max_surge_fixed, max(1, var.compute_instance_replicas - 1) + length(local.compute_region_zones))
+    max_surge_fixed       = coalesce(var.max_surge_fixed, max(1, local.replicas_per_group - 1) + length(local.compute_region_zones))
   }
 
   timeouts {
